@@ -1,5 +1,7 @@
 from lark import Lark, Transformer
 
+#Parser fornecido pelo professor
+
 TOKEN_OR   = "|"
 TOKEN_AND  = "&"
 TOKEN_IMPL = "->"
