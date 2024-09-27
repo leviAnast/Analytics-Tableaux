@@ -44,7 +44,7 @@ def expansoes_alfa(): #Realiza as operações de expansão para fórmulas do tip
                     ramo.append((marcacao_alfa2, alfa2))
                     betas.append(checagem_beta((marcacao_alfa2, alfa2)))
                 
-                if not (checagem_beta((marcacao_alfa1, alfa1)) and (marcacao_alfa2, alfa2)):
+                if not (checagem_beta((marcacao_alfa1, alfa1)) and checagem_beta((marcacao_alfa2, alfa2))):
                     checagem_novo_alfa = True
 
                 indice_remocao = ramo.index(no)
