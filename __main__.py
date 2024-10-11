@@ -25,24 +25,37 @@ def ler_arquivo(): #Leitura do arquivo, armazenamento das fórmulas marcadas no 
     for no in ramo:
         betas.append(checagem_beta(no))
     
-def provar_tableau():# prova as formulas presentes no ramo
+def provar_tableau():
     global ramo, betas, PilhaDeRamos
     
     while True:
-        expansoes_alfa() #expande os alfas
+       
+        expansoes_alfa()
 
-        if checagem_ramo_fechado(): #ramo fechou
-            if len(PilhaDeRamos) > 0: #caso a pilha não esteja vazia
+        if checagem_ramo_fechado():
+            
+            if len(PilhaDeRamos) > 0:
+               
                 desempilhar()
-            else: #caso não haja mais elementos na pilha
+                
+            else:
                 print("Sequente válido")
                 break
-        else: #se o ramo não fechou
-            if any(betas): #verifica se há algum beta e se sim, expande
-                expansoes_beta()
-            else: #caso não haja betas para expansão, imprime valoração
+        else:
+            beta_expansivel = False
+            for i, beta in enumerate(betas):
+                if beta:
+                    expansoes_beta()
+                    beta_expansivel = True
+                    break
+            
+            if not beta_expansivel:
                 valoracao()
                 break
+    print(f'PRINTANDO RAMO APOS TODASSS AS EXPANSÕES {ramo}')
+    print(f'PRINTANDO pilhadeRAMOs APOS TODASSS AS EXPANSÕES {PilhaDeRamos}')
+    
+
 
    
 def main():

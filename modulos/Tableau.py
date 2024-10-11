@@ -21,6 +21,7 @@ marcacoes_expansoes_beta = { #mapeia as marcações das expansões beta de acord
 
 def expansoes_alfa(): #Realiza as operações de expansão para fórmulas do tipo alfa
     global ramo, checagem_novo_alfa, marcacoes_expansoes_alfa
+    
     while(checagem_novo_alfa):
         checagem_novo_alfa = False
 
@@ -44,7 +45,7 @@ def expansoes_alfa(): #Realiza as operações de expansão para fórmulas do tip
                     ramo.append((marcacao_alfa2, alfa2))
                     betas.append(checagem_beta((marcacao_alfa2, alfa2)))
                 
-                if not (checagem_beta((marcacao_alfa1, alfa1)) and checagem_beta((marcacao_alfa2, alfa2))):
+                if not (checagem_beta((marcacao_alfa1, alfa1)) or checagem_beta((marcacao_alfa2, alfa2))):
                     checagem_novo_alfa = True
 
                 indice_remocao = ramo.index(no)
@@ -65,7 +66,7 @@ def checagem_beta(no): #verifica se uma formula no ramo do Tableau é do tipo be
             
     return False
 
-def expansoes_beta(): #Realiza as operações de expansão para fórmulas do tipo beta
+def expansoes_beta(): 
     global ramo, betas, checagem_novo_alfa, PilhaDeRamos, marcacoes_expansoes_beta
     for i in range(len(betas)):
         if betas[i]:
@@ -76,8 +77,11 @@ def expansoes_beta(): #Realiza as operações de expansão para fórmulas do tip
 
             betas[i] = False
             PilhaDeRamos.append([(marcacao_expansao2, beta2), len(ramo), betas.copy()])
+            
             ramo.append((marcacao_expansao1, beta1))
             betas.append(checagem_beta((marcacao_expansao1, beta1)))
+
+            print(f"Expansão Beta: {beta1}, {beta2}")  # Debug para ver os betas expandidos
             
             if not checagem_beta((marcacao_expansao1, beta1)):
                 checagem_novo_alfa = True
@@ -87,24 +91,31 @@ def expansoes_beta(): #Realiza as operações de expansão para fórmulas do tip
 def desempilhar(): #Caso haja ainda betas2 para expansão, remove eles da pilha e adiciona ao ramo
     global PilhaDeRamos, betas, ramo
     beta2, tamanho_atual_ramo, betas_copia = PilhaDeRamos.pop() 
-
     ramo = ramo[:tamanho_atual_ramo]
-    betas = betas_copia[:tamanho_atual_ramo]
+    betas = betas[:tamanho_atual_ramo]
     ramo.append(beta2)
     betas.append(checagem_beta(beta2))
 
-def checagem_ramo_fechado(): #verifica se o ramo está fechado
+def checagem_ramo_fechado():
     global ramo
-    aux_atomos = []
-    
-    for (marcacao, formula) in ramo:
-        if checagem_atomo((marcacao, formula)):
-            if ((not marcacao, formula) in aux_atomos):
-                return True
-            
-            aux_atomos.append((marcacao, formula))
+    aux_atomos = {}
 
-    return False
+    for elemento in ramo:
+        if checagem_atomo(elemento):
+            # Obtemos o nome do átomo (sem a marcação de verdadeiro ou falso)
+            atomo = elemento[1]
+            valoracao = elemento[0]  # True ou False
+
+            if atomo in aux_atomos:
+                # Se já existe o átomo, verificamos se a valorização é diferente
+                if aux_atomos[atomo] != valoracao:
+                    return True  # Ramo fechado
+            else:
+                # Armazenamos a valorização do átomo
+                aux_atomos[atomo] = valoracao
+
+    return False  # Ramo não fechado
+    
 
 def checagem_atomo(no): #Verifica se uma fórmula passa é ou não um átomo
     formula = no[1]
@@ -115,19 +126,22 @@ def checagem_atomo(no): #Verifica se uma fórmula passa é ou não um átomo
     
     return False
    
-def valoracao(): #Realiza a operação de printar a valoração dos átomos nas situações de não fechamento de todos os ramos do Tableau
+def valoracao(): 
     global ramo 
-    
     aux_valoracao = []
  
     for (marcacao, formula) in ramo:
         if checagem_atomo((marcacao, formula)) and (marcacao, formula) not in aux_valoracao:
-                aux_valoracao.append((marcacao, formula))
+            aux_valoracao.append((marcacao, formula))
     
+    # Verifica e imprime o conteúdo de aux_valoracao para debug
+    print("Debug: Valorações coletadas:", aux_valoracao)
+
     for (marcacao, atomo) in aux_valoracao:
         if marcacao:
             print(f'T{atomo}')
         else:
             print(f'F{atomo}')
+
 
     
